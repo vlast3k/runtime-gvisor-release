@@ -1,0 +1,14 @@
+---
+name: runtime-gvisor
+version: 0.1.0
+
+description: |
+  gVisor (runsc) container runtime for Cloud Foundry diego-cells.
+  Colocate with garden-runc-release to enable gVisor as the container runtime.
+
+packages:
+  - runsc
+  - containerd-shim-runsc-v1
+
+jobs:
+  - gvisor-runtime

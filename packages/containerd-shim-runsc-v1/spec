@@ -1,0 +1,5 @@
+---
+name: containerd-shim-runsc-v1
+dependencies: []
+files:
+  - shim/containerd-shim-runsc-v1

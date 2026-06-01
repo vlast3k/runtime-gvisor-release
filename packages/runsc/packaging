@@ -1,0 +1,3 @@
+set -e
+cp runsc/runsc ${BOSH_INSTALL_TARGET}/runsc
+chmod 755 ${BOSH_INSTALL_TARGET}/runsc

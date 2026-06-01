@@ -1,0 +1,21 @@
+#!/bin/bash
+set -eu
+
+RUNSC_PKG=/var/vcap/packages/runsc
+SHIM_PKG=/var/vcap/packages/containerd-shim-runsc-v1
+CONFIG_DIR=/etc/containerd/runsc
+LOG_DIR=<%= p('gvisor.log_dir') %>
+
+# Install binaries to PATH visible by containerd
+ln -sf ${RUNSC_PKG}/runsc /usr/local/bin/runsc
+ln -sf ${SHIM_PKG}/containerd-shim-runsc-v1 /usr/local/bin/containerd-shim-runsc-v1
+
+# Write runtime config
+mkdir -p ${CONFIG_DIR}
+cp /var/vcap/jobs/gvisor-runtime/config/runsc-config.toml ${CONFIG_DIR}/config.toml
+
+# Ensure log directory exists
+mkdir -p ${LOG_DIR}
+chmod 777 ${LOG_DIR}
+
+echo "gVisor runtime installed: $(runsc --version 2>&1 | head -1)"

@@ -1,0 +1,31 @@
+---
+name: gvisor-runtime
+description: |
+  Installs gVisor (runsc) and containerd-shim-runsc-v1 binaries and configures
+  the runtime for use by Garden's containerd. Colocate on diego-cells that
+  should use gVisor instead of runc.
+
+templates:
+  bin/pre-start.sh.erb: bin/pre-start
+  config/runsc-config.toml.erb: config/runsc-config.toml
+
+packages:
+  - runsc
+  - containerd-shim-runsc-v1
+
+properties:
+  gvisor.overlay2:
+    description: "Overlay2 setting for runsc (none/self/root:self)"
+    default: "none"
+  gvisor.network:
+    description: "Network mode for runsc (sandbox/host/none)"
+    default: "sandbox"
+  gvisor.debug:
+    description: "Enable debug logging for runsc"
+    default: false
+  gvisor.strace:
+    description: "Enable strace logging for runsc"
+    default: false
+  gvisor.log_dir:
+    description: "Directory for runsc debug logs"
+    default: "/var/vcap/sys/log/runsc-debug"

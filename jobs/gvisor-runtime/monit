@@ -1,0 +1,2 @@
+# gvisor-runtime is a pre-start-only job (installs binaries and config).
+# No long-running process to monitor.

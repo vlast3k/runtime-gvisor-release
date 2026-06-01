@@ -1,0 +1,15 @@
+<% if p('gvisor.debug') %>
+log_path = "<%= p('gvisor.log_dir') %>/shim-%ID%.log"
+log_level = "debug"
+<% end %>
+
+[runsc_config]
+overlay2 = "<%= p('gvisor.overlay2') %>"
+network = "<%= p('gvisor.network') %>"
+<% if p('gvisor.debug') %>
+debug = "true"
+debug-log = "<%= p('gvisor.log_dir') %>/runsc-%ID%-%COMMAND%.log"
+<% end %>
+<% if p('gvisor.strace') %>
+strace = "true"
+<% end %>

@@ -1,0 +1,3 @@
+set -e
+cp shim/containerd-shim-runsc-v1 ${BOSH_INSTALL_TARGET}/containerd-shim-runsc-v1
+chmod 755 ${BOSH_INSTALL_TARGET}/containerd-shim-runsc-v1
