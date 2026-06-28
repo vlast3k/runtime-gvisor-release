@@ -18,4 +18,13 @@ cp /var/vcap/jobs/gvisor-runtime/config/runsc-config.toml ${CONFIG_DIR}/config.t
 mkdir -p ${LOG_DIR}
 chmod 777 ${LOG_DIR}
 
+# Inject containerd-runtime-type into garden's config.ini if not already present.
+# Garden's BOSH job template doesn't support this property natively, so we append it
+# after the containerd-socket line. This must run AFTER garden's pre-start renders config.ini.
+GARDEN_CONFIG=/var/vcap/jobs/garden/config/config.ini
+if [ -f "${GARDEN_CONFIG}" ] && ! grep -q "containerd-runtime-type" "${GARDEN_CONFIG}"; then
+  sed -i '/containerd-socket/a\  containerd-runtime-type = <%= p("gvisor.containerd_runtime_type") %>' "${GARDEN_CONFIG}"
+  echo "Injected containerd-runtime-type into garden config.ini"
+fi
+
 echo "gVisor runtime installed: $(runsc --version 2>&1 | head -1)"

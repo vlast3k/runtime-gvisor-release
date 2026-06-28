@@ -29,3 +29,6 @@ properties:
   gvisor.log_dir:
     description: "Directory for runsc debug logs"
     default: "/var/vcap/sys/log/runsc-debug"
+  gvisor.containerd_runtime_type:
+    description: "Containerd runtime type to inject into garden config (e.g. io.containerd.runsc.v1)"
+    default: "io.containerd.runsc.v1"
