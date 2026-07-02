@@ -29,6 +29,9 @@ properties:
   gvisor.log_dir:
     description: "Directory for runsc debug logs"
     default: "/var/vcap/sys/log/runsc-debug"
+  gvisor.directfs:
+    description: "Enable directfs mode for runsc (must be false for CF due to UID mapping without userns)"
+    default: false
   gvisor.containerd_runtime_type:
     description: "Containerd runtime type to inject into garden config (e.g. io.containerd.runsc.v1)"
     default: "io.containerd.runsc.v1"

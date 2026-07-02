@@ -18,13 +18,25 @@ cp /var/vcap/jobs/gvisor-runtime/config/runsc-config.toml ${CONFIG_DIR}/config.t
 mkdir -p ${LOG_DIR}
 chmod 777 ${LOG_DIR}
 
-# Inject containerd-runtime-type into garden's config.ini if not already present.
-# Garden's BOSH job template doesn't support this property natively, so we append it
+# Inject gVisor-required settings into garden's config.ini if not already present.
+# Garden's BOSH job template doesn't support these properties natively, so we append them
 # after the containerd-socket line. This must run AFTER garden's pre-start renders config.ini.
+#
+# Two settings are required:
+#   1. containerd-runtime-type = io.containerd.runsc.v1
+#      Routes container creation through the gVisor shim instead of runc.
+#   2. use-containerd-for-processes = true
+#      Routes Run() (exec into container) through containerd instead of the runtime-plugin (runc).
+#      Without this, healthchecks fail with "container does not exist" because runc doesn't know
+#      about containers created by runsc.
 GARDEN_CONFIG=/var/vcap/jobs/garden/config/config.ini
 if [ -f "${GARDEN_CONFIG}" ] && ! grep -q "containerd-runtime-type" "${GARDEN_CONFIG}"; then
   sed -i '/containerd-socket/a\  containerd-runtime-type = <%= p("gvisor.containerd_runtime_type") %>' "${GARDEN_CONFIG}"
   echo "Injected containerd-runtime-type into garden config.ini"
+fi
+if [ -f "${GARDEN_CONFIG}" ] && ! grep -q "use-containerd-for-processes" "${GARDEN_CONFIG}"; then
+  sed -i '/containerd-runtime-type/a\  use-containerd-for-processes = true' "${GARDEN_CONFIG}"
+  echo "Injected use-containerd-for-processes into garden config.ini"
 fi
 
 echo "gVisor runtime installed: $(runsc --version 2>&1 | head -1)"

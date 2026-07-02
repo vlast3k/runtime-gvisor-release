@@ -6,6 +6,7 @@ log_level = "debug"
 [runsc_config]
 overlay2 = "<%= p('gvisor.overlay2') %>"
 network = "<%= p('gvisor.network') %>"
+directfs = "<%= p('gvisor.directfs') %>"
 <% if p('gvisor.debug') %>
 debug = "true"
 debug-log = "<%= p('gvisor.log_dir') %>/runsc-%ID%-%COMMAND%.log"
