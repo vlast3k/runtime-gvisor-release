@@ -40,3 +40,22 @@ if [ -f "${GARDEN_CONFIG}" ] && ! grep -q "use-containerd-for-processes" "${GARD
 fi
 
 echo "gVisor runtime installed: $(runsc --version 2>&1 | head -1)"
+
+# Fix exclude_image_from_quota for gVisor cells.
+# Garden's template renders this as 'false' by default. gVisor cells MUST have 'true'
+# because cflinuxfs4 rootfs (1.4GB) would otherwise count against container disk_quota,
+# causing "disk limit is smaller than volume size" errors on container creation.
+#
+# Handle both cases:
+#   - Property exists as 'false' → replace with 'true'
+#   - Property missing entirely → inject after 'cleanup_threshold_in_megabytes' or at end
+GROOTFS_CONFIG=/var/vcap/jobs/garden/config/grootfs_config.yml
+if [ -f "${GROOTFS_CONFIG}" ]; then
+  if grep -q "exclude_image_from_quota: false" "${GROOTFS_CONFIG}"; then
+    sed -i 's/exclude_image_from_quota: false/exclude_image_from_quota: true/' "${GROOTFS_CONFIG}"
+    echo "Fixed exclude_image_from_quota: false → true in grootfs_config.yml"
+  elif ! grep -q "exclude_image_from_quota" "${GROOTFS_CONFIG}"; then
+    echo "exclude_image_from_quota: true" >> "${GROOTFS_CONFIG}"
+    echo "Injected exclude_image_from_quota: true into grootfs_config.yml"
+  fi
+fi

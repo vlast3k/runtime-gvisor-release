@@ -1,0 +1,67 @@
+#!/bin/bash
+set -eu
+
+# post-start: Handle the rep metron initialization race condition.
+#
+# On fresh cells, rep and loggregator_agent start concurrently via monit.
+# If rep starts faster (common on gVisor cells due to lighter sandbox init),
+# it fails to initialize its metron client:
+#   "rep.failed-to-initialize-metron-client: context deadline exceeded"
+#
+# When this happens, rep starts its main loop (processing BBS work) but NEVER
+# opens its HTTPS listener on port 1801. Without that listener, the cell is
+# invisible to BBS for new placements → NoCompatibleCell errors.
+#
+# This post-start waits for loggregator_agent to be ready, then checks if rep
+# hit the race. If it did, it restarts rep (which will now find metron ready).
+#
+# This runs AFTER all monit jobs are started, so loggregator_agent should be
+# up by now. The wait loop is a safety margin for slow cells.
+
+REP_LOG=/var/vcap/sys/log/rep/rep.stdout.log
+LOGGR_PORT=3458
+MAX_WAIT=60
+REP_PORT=1801
+
+echo "gvisor-runtime post-start: checking rep metron initialization..."
+
+# Wait for loggregator_agent gRPC port to be ready
+for i in $(seq 1 ${MAX_WAIT}); do
+  if ss -tlnp 2>/dev/null | grep -q ":${LOGGR_PORT}" || \
+     netstat -tlnp 2>/dev/null | grep -q ":${LOGGR_PORT}"; then
+    echo "loggregator_agent port ${LOGGR_PORT} ready after ${i}s"
+    break
+  fi
+  if [ "$i" -eq "${MAX_WAIT}" ]; then
+    echo "WARNING: loggregator_agent port ${LOGGR_PORT} not ready after ${MAX_WAIT}s"
+  fi
+  sleep 1
+done
+
+# Give rep a moment to attempt initialization
+sleep 5
+
+# Check if rep failed to initialize metron
+if [ -f "${REP_LOG}" ] && grep -q "failed-to-initialize-metron-client" "${REP_LOG}"; then
+  # Verify rep is not listening on its secure port (confirms it's in the broken state)
+  if ! ss -tlnp 2>/dev/null | grep -q ":${REP_PORT}" && \
+     ! netstat -tlnp 2>/dev/null | grep -q ":${REP_PORT}"; then
+    echo "Rep hit metron initialization race — restarting rep"
+    /var/vcap/bosh/bin/monit restart rep
+
+    # Wait for rep to come back and verify it's serving
+    for i in $(seq 1 30); do
+      if ss -tlnp 2>/dev/null | grep -q ":${REP_PORT}" || \
+         netstat -tlnp 2>/dev/null | grep -q ":${REP_PORT}"; then
+        echo "Rep successfully restarted and serving on port ${REP_PORT}"
+        exit 0
+      fi
+      sleep 2
+    done
+    echo "WARNING: Rep restarted but not yet serving on port ${REP_PORT}"
+  else
+    echo "Rep is serving on port ${REP_PORT} — no action needed"
+  fi
+else
+  echo "No metron initialization failure detected — rep is healthy"
+fi
