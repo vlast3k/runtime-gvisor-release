@@ -18,6 +18,13 @@ cp /var/vcap/jobs/gvisor-runtime/config/runsc-config.toml ${CONFIG_DIR}/config.t
 mkdir -p ${LOG_DIR}
 chmod 777 ${LOG_DIR}
 
+# gVisor (runsc) requires ptrace_scope=0 so the Sentry can attach to sandboxed
+# processes. Without it, runsc fails: "unable to attach: operation not permitted".
+# Set persistently (survives reboot) and apply immediately for the current boot.
+echo "kernel.yama.ptrace_scope = 0" > /etc/sysctl.d/60-gvisor-ptrace.conf
+sysctl -w kernel.yama.ptrace_scope=0
+echo "Set kernel.yama.ptrace_scope=0 for gVisor"
+
 # Inject gVisor-required settings into garden's config.ini if not already present.
 # Garden's BOSH job template doesn't support these properties natively, so we append them
 # after the containerd-socket line. This must run AFTER garden's pre-start renders config.ini.
