@@ -1,9 +1,10 @@
 ---
 name: gvisor-runtime
 description: |
-  Installs gVisor (runsc) and containerd-shim-runsc-v1 binaries and configures
-  the runtime for use by Garden's containerd. Colocate on diego-cells that
-  should use gVisor instead of runc.
+  Installs release-matched gVisor runsc, gvisor_sentry, and
+  containerd-shim-runsc-v1 binaries and configures the runtime for use by
+  Garden's containerd. Colocate on diego-cells that should use gVisor instead
+  of runc.
 
 templates:
   bin/pre-start.sh.erb: bin/pre-start

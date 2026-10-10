@@ -3,3 +3,4 @@ name: runsc
 dependencies: []
 files:
   - runsc/runsc
+  - sentry/gvisor_sentry

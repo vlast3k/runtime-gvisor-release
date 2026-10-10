@@ -1,0 +1,33 @@
+{
+  "gvisor": {
+    "upstream_tag": "release-20261005.0",
+    "upstream_commit": "97e8e896904cb364319cd9758241d3f0bd27a6f4",
+    "source_repository": "https://github.com/vlast3k/gvisor",
+    "source_branch": "cfar-1501-release-20261005-stock",
+    "source_commit": "0e57dfe144cba0fef36adb4511fa54a1c4d71475",
+    "version": "release-20261005.0-3-g0e57dfe144cb",
+    "build_tool": "Bazel 8.3.1",
+    "build_targets": [
+      "//runsc:runsc",
+      "//shim:containerd-shim-runsc-v1",
+      "//runsc/cmd/sentry:gvisor_sentry"
+    ]
+  },
+  "artifacts": {
+    "runsc": {
+      "blob": "runsc/runsc",
+      "size": 83116194,
+      "sha256": "17ea95c05f71b4beff1848fa08cdafb12707b3ce2d7e2e746a7c2e78d77a35ac"
+    },
+    "containerd-shim-runsc-v1": {
+      "blob": "shim/containerd-shim-runsc-v1",
+      "size": 29855906,
+      "sha256": "d0c0a4d1d3f52025e87d56f3da1937235f947996b60c880297de9d9a03facda4"
+    },
+    "gvisor_sentry": {
+      "blob": "sentry/gvisor_sentry",
+      "size": 32821410,
+      "sha256": "bafcf5651e544a0f1acb440766f5e5ec279c737d84d135ccb93688a55acd88e6"
+    }
+  }
+}

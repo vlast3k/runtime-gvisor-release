@@ -1,3 +1,6 @@
 set -e
 cp runsc/runsc ${BOSH_INSTALL_TARGET}/runsc
 chmod 755 ${BOSH_INSTALL_TARGET}/runsc
+mkdir -p ${BOSH_INSTALL_TARGET}/gvisor-bin
+cp sentry/gvisor_sentry ${BOSH_INSTALL_TARGET}/gvisor-bin/gvisor_sentry
+chmod 755 ${BOSH_INSTALL_TARGET}/gvisor-bin/gvisor_sentry
