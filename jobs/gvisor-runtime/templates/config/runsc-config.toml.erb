@@ -7,6 +7,7 @@ log_level = "debug"
 overlay2 = "<%= p('gvisor.overlay2') %>"
 network = "<%= p('gvisor.network') %>"
 directfs = "<%= p('gvisor.directfs') %>"
+sandbox-cpu-num-cap = "<%= p('gvisor.sandbox_cpu_num_cap') %>"
 <% if p('gvisor.debug') %>
 debug = "true"
 debug-log = "<%= p('gvisor.log_dir') %>/runsc-%ID%-%COMMAND%.log"

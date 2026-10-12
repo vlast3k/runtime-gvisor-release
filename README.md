@@ -28,6 +28,7 @@ instance_groups:
       gvisor:
         overlay2: "none"    # required for Garden StreamIn visibility
         network: "sandbox"  # gVisor's userspace netstack
+        sandbox_cpu_num_cap: 2
         debug: false
 ```
 
@@ -35,13 +36,15 @@ instance_groups:
 
 | Binary | Source | Purpose |
 |--------|--------|---------|
-| `runsc` | [vlast3k/gvisor@0e57dfe144cb](https://github.com/vlast3k/gvisor/commit/0e57dfe144cba0fef36adb4511fa54a1c4d71475) | gVisor sandbox runtime with CF V1, V2, and V4 only |
-| `containerd-shim-runsc-v1` | Same source revision, stock binary | containerd shim for runsc |
-| `gvisor_sentry` | Same source revision, stock binary | Release-matched external Sentry for strict sidecar mode |
+| `runsc` | `vlast3k/gvisor@0e57dfe144cb` plus the tracked CPU-cap patch | gVisor sandbox runtime with CF V1, V2, and V4 only |
+| `containerd-shim-runsc-v1` | Same patched source tree | Release-matched containerd shim for runsc |
+| `gvisor_sentry` | Same patched source tree | Release-matched external Sentry for strict sidecar mode |
 
 The source branch is `cfar-1501-release-20261005-stock`, based on official
 gVisor `release-20261005.0`. Exact artifact sizes and hashes are recorded in
-`ARTIFACTS.json` and checked by `scripts/verify_artifacts.py`.
+`ARTIFACTS.json` and checked by `scripts/verify_artifacts.py`. The current
+artifacts report a dirty source version because the CPU-cap patch has not yet
+been committed; publish from an immutable source commit before promotion.
 
 ## Building
 
@@ -59,7 +62,7 @@ bosh add-blob bazel-bin/shim/containerd-shim-runsc-v1_/containerd-shim-runsc-v1 
 bosh add-blob bazel-bin/runsc/cmd/sentry/gvisor_sentry_/gvisor_sentry sentry/gvisor_sentry
 
 python3 scripts/verify_artifacts.py
-bosh create-release --force --version 0.2.0-cfar1502 \
+bosh create-release --force --version 0.3.0-cfar1502 \
   --tarball /tmp/runtime-gvisor-release-20261005-v1-v2-v4.tgz
 ```
 

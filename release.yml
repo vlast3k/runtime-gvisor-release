@@ -1,6 +1,6 @@
 ---
 name: runtime-gvisor
-version: 0.2.0-cfar1502
+version: 0.3.0-cfar1502
 
 description: |
   gVisor (runsc, release-matched sentry, and containerd shim) container runtime
