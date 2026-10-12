@@ -36,15 +36,16 @@ instance_groups:
 
 | Binary | Source | Purpose |
 |--------|--------|---------|
-| `runsc` | `vlast3k/gvisor@0e57dfe144cb` plus the tracked CPU-cap patch | gVisor sandbox runtime with CF V1, V2, and V4 only |
+| `runsc` | Pre-commit worktree equivalent to `vlast3k/gvisor@ec3f329c0` | gVisor sandbox runtime with CF V1, V2, V4, and the CPU topology cap |
 | `containerd-shim-runsc-v1` | Same patched source tree | Release-matched containerd shim for runsc |
 | `gvisor_sentry` | Same patched source tree | Release-matched external Sentry for strict sidecar mode |
 
 The source branch is `cfar-1501-release-20261005-stock`, based on official
 gVisor `release-20261005.0`. Exact artifact sizes and hashes are recorded in
-`ARTIFACTS.json` and checked by `scripts/verify_artifacts.py`. The current
-artifacts report a dirty source version because the CPU-cap patch has not yet
-been committed; publish from an immutable source commit before promotion.
+`ARTIFACTS.json` and checked by `scripts/verify_artifacts.py`. The CPU-cap patch
+is committed as `ec3f329c01c07bcda99cf4ae6af7014e87c377e6`, but the current
+artifacts were built immediately before that commit and still report a dirty
+source version. Rebuild from the clean commit before promotion.
 
 ## Building
 

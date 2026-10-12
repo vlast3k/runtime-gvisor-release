@@ -4,8 +4,8 @@
     "upstream_commit": "97e8e896904cb364319cd9758241d3f0bd27a6f4",
     "source_repository": "https://github.com/vlast3k/gvisor",
     "source_branch": "cfar-1501-release-20261005-stock",
-    "source_commit": "0e57dfe144cba0fef36adb4511fa54a1c4d71475",
-    "source_state": "base commit plus tracked sandbox CPU cap changes in the release source worktree",
+    "source_commit": "ec3f329c01c07bcda99cf4ae6af7014e87c377e6",
+    "source_state": "artifacts were built from the pre-commit worktree equivalent to ec3f329c01c07bcda99cf4ae6af7014e87c377e6; rebuild from that clean commit before promotion",
     "version": "release-20261005.0-3-g0e57dfe144cb-dirty",
     "build_tool": "Bazel 8.3.1",
     "build_targets": [
